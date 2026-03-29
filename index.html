@@ -24,6 +24,25 @@
     </div>
   </main>
 
+  <!-- 点数早見表モーダル -->
+  <div id="score-table-modal" class="modal-overlay" onclick="if(event.target===this)closeScoreTable()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>📊 点数早見表</span>
+        <button class="modal-close" onclick="closeScoreTable()">✕</button>
+      </div>
+      <div class="score-tabs">
+        <button class="score-tab-btn active" data-tab="koRon" onclick="switchScoreTab('koRon')">子ロン</button>
+        <button class="score-tab-btn" data-tab="oyaRon" onclick="switchScoreTab('oyaRon')">親ロン</button>
+        <button class="score-tab-btn" data-tab="koTsumo" onclick="switchScoreTab('koTsumo')">子ツモ</button>
+        <button class="score-tab-btn" data-tab="oyaTsumo" onclick="switchScoreTab('oyaTsumo')">親ツモ</button>
+      </div>
+      <div class="score-table-wrapper">
+        <div id="score-table-content"></div>
+      </div>
+    </div>
+  </div>
+
   <script src="problems.js"></script>
   <script src="game.js"></script>
 </body>

@@ -105,6 +105,7 @@ function renderProblem() {
         <label>翻<input type="number" id="inp-han" min="0" max="13" inputmode="numeric"></label>
       </div>
       ${renderScoreInputs(p)}
+      <button class="btn-hint" onclick="openScoreTable()">📊 点数早見表</button>
       <button id="btn-submit" class="btn-primary" onclick="submitAnswer()">答える</button>
     </div>
   `;
@@ -254,6 +255,69 @@ function restartGame() {
   state = { problemIndex: 0, score: 0, answered: [], showingResult: false };
   document.getElementById('score-display').textContent = '0 / 0';
   renderProblem();
+}
+
+// ────────────────────────────
+// 点数早見表
+// ────────────────────────────
+let currentScoreTab = 'koRon';
+
+function openScoreTable() {
+  document.getElementById('score-table-modal').classList.add('open');
+  renderScoreTable();
+}
+
+function closeScoreTable() {
+  document.getElementById('score-table-modal').classList.remove('open');
+}
+
+function switchScoreTab(tab) {
+  currentScoreTab = tab;
+  document.querySelectorAll('.score-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  renderScoreTable();
+}
+
+function renderScoreTable() {
+  const FU_LIST = [20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110];
+  const HAN_LIST = [1, 2, 3, 4, 5];
+  const tab = currentScoreTab;
+  const roundUp = n => Math.ceil(n / 100) * 100;
+  const fmt = n => n.toLocaleString();
+
+  function getScore(fu, han) {
+    const base = fu * Math.pow(2, han + 2);
+    const mangan = base >= 2000 || han >= 5;
+    if (mangan) {
+      return { text: { koRon:'8,000', oyaRon:'12,000', koTsumo:'子2,000<br>親4,000', oyaTsumo:'各4,000' }[tab], mangan: true };
+    }
+    return {
+      text: {
+        koRon: fmt(roundUp(base * 4)),
+        oyaRon: fmt(roundUp(base * 6)),
+        koTsumo: `子${fmt(roundUp(base))}<br>親${fmt(roundUp(base * 2))}`,
+        oyaTsumo: `各${fmt(roundUp(base * 2))}`
+      }[tab],
+      mangan: false
+    };
+  }
+
+  let html = '<table class="score-table"><thead><tr><th>符＼翻</th>';
+  HAN_LIST.forEach(h => { html += `<th>${h === 5 ? '満貫' : h + '翻'}</th>`; });
+  html += '</tr></thead><tbody>';
+
+  FU_LIST.forEach(fu => {
+    html += `<tr><th>${fu}符</th>`;
+    HAN_LIST.forEach(han => {
+      const s = getScore(fu, han);
+      html += `<td class="${s.mangan ? 'mangan-cell' : ''}">${s.text}</td>`;
+    });
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  document.getElementById('score-table-content').innerHTML = html;
 }
 
 // 初期化
